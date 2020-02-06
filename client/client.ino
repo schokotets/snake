@@ -1,8 +1,8 @@
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
 
-char ssid* = "snake"; // network SSID (name)
-char pass* = "n3tw0rk!"; // network password
+char *ssid = "snake"; // network SSID (name)
+char *pass = "n3tw0rk!"; // network password
 unsigned int udpPort = 9900; // local port to listen for UDP packets
 
 // A UDP instance to let us send and receive packets over UDP
