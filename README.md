@@ -1,5 +1,7 @@
 # Network Snake
 
+Using [Pithikos/python-websocket-server](https://github.com/Pithikos/python-websocket-server) for websockets.
+
 ## WiFi Network setup
 
 SSID: `snake`  
