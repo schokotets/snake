@@ -6,6 +6,9 @@ function handleMessage(data) {
 
     let colors = ["#009e73", "#56b4e9", "#0072b2", "#00ced1", "#ffb000"]
 
+    //canvas.width = canvas.offsetWidth;
+    //canvas.height = canvas.offsetHeight;
+
     let lines = data.split("\n");
     let wh = lines[0].split("x");
     let width = wh[0];
@@ -20,20 +23,19 @@ function handleMessage(data) {
             context2d.rect(x*cw, y*ch, cw, ch)
             let id = line[x]
             if (id == '0') {
+                context2d.fillStyle = "white"
+                context2d.fill();
                 context2d.strokeStyle = "darkgray"
                 context2d.stroke()
             } else if (id == '-1') {
                 context2d.fillStyle = "#dc267f"
                 context2d.fill();
             } else {
-                context2d.fillStyle = colors[parseInt(id, 10)%colors.length]
+                context2d.fillStyle = colors[id%colors.length]
                 context2d.fill();
             }
             context2d.closePath();
         }
     }
-
-
-    context2d.moveTo(128, 128);
-    context2d.closePath();
+    document.body.style.backgroundColor = colors[id%colors.length]
 }

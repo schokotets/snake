@@ -6,6 +6,8 @@ canvas {
     max-width: 95%;
     margin: 0 auto;
     display: block;
+    border: black solid 3px;
+    box-sizing: content-box;
 }
 
 table {
