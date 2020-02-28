@@ -29,7 +29,8 @@ class WebSocketThread(threading.Thread):
         server.send_message(client, "%d" % client['id'])
     def message_received(self, client, server, msg):
         print("websocket: received message \"%s\"" % msg)
-        
+        id,dir = msg.split()
+        gamestate.handle(int(id), dir)
     def run(self):
         self.websocks.set_fn_new_client(self.client_connected)
         self.websocks.set_fn_message_received(self.message_received)
@@ -49,7 +50,7 @@ class UdpThread(threading.Thread):
             if(len(data) == 2):
                 id,c = struct.unpack("Bc", data[:3])
                 print("udpserver: received id:", id, "l/r:", c)
-                gamestate.handle(id, c)
+                gamestate.handle(id, c.decode("utf-8"))
             else:
                 print("udpserver: received message of invalid length", len(data))
 
@@ -61,6 +62,8 @@ try:
     websockt.start()
 
     gamestate = GameState(websockt.send)
+    gamestate.daemon = True
+    gamestate.start()
 
     httpt = HttpThread()
     httpt.daemon = True
