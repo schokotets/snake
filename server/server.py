@@ -4,6 +4,7 @@ import websocket_server
 import socketserver
 import socket
 import struct
+from gamestate import GameState
 
 HTTP_PORT=8080
 WEBSOCKET_PORT=8090
@@ -14,17 +15,19 @@ class HttpThread(threading.Thread):
         Handler=http.server.SimpleHTTPRequestHandler
 
         with socketserver.TCPServer(("", HTTP_PORT), Handler) as httpd:
-                print("serving http at port", HTTP_PORT)
+                print("webserver: serving http at port", HTTP_PORT)
                 httpd.serve_forever()
 
 class WebSocketThread(threading.Thread):
     websocks = websocket_server.WebsocketServer(WEBSOCKET_PORT)
     def send(self, msg):
+        print("websocket: sending message \"%s\"" % msg)
         self.websocks.send_message_to_all(msg)
     def client_connected(self, client, server):
-        print("client connected, given id %d" % client['id'])
+        print("websocket: client connected, given id %d" % client['id'])
     def run(self):
         self.websocks.set_fn_new_client(self.client_connected)
+        print("websocket: serving websocket at port", WEBSOCKET_PORT)
         self.websocks.serve_forever()
 
 class UdpThread(threading.Thread):
@@ -33,17 +36,25 @@ class UdpThread(threading.Thread):
         sock = socket.socket(socket.AF_INET, # Internet
                              socket.SOCK_DGRAM) # UDP
         sock.bind(("", UDP_PORT))
+        print("udpserver: serving udp server at port", UDP_PORT)
 
         while True:
             data, addr = sock.recvfrom(1024) # buffer size is 1024 bytes
-            if(len(data) == 3):
-                id,x,y = struct.unpack("Bbb", data[:3])
-                print("received id:", id, "x:", x, "y:", y)
-                websockt.send("%d %d %d" % (id, x, y))
+            if(len(data) == 2):
+                id,c = struct.unpack("Bc", data[:3])
+                print("udpserver: received id:", id, "l/r:", c)
+                gamestate.handle(id, c)
             else:
-                print("received message of invalid length", len(data))
+                print("udpserver: received message of invalid length", len(data))
 
-HttpThread().start()
-UdpThread().start()
-websockt = WebSocketThread()
-websockt.start()
+try:
+    print("system: staring threads...")
+    websockt = WebSocketThread()
+    websockt.start()
+    gamestate = GameState(websockt.send)
+
+    HttpThread().start()
+    UdpThread().start()
+except (KeyboardInterrupt, SystemExit):
+    print("system: received keyboard interrupt, quitting threads")
+    sys.exit()
