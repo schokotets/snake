@@ -26,7 +26,7 @@ class GameState(threading.Thread):
         pos = self.freepos()
         self.grid[pos] = id
         self.players[id] = [pos]
-        self.facing[id] = "r"
+        self.facing[id] = random.choice(["u", "r", "d", "l"])
         self.lengths[id] = 3
 
     def reset(self, id):
@@ -35,7 +35,7 @@ class GameState(threading.Thread):
         pos = self.freepos()
         self.grid[pos] = id
         self.players[id] = [pos]
-        self.facing[id] = "r"
+        self.facing[id] = random.choice(["u", "r", "d", "l"])
         self.lengths[id] = 3
 
     
