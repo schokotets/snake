@@ -4,10 +4,7 @@ function handleMessage(data) {
     let context2d = canvas.getContext('2d');
     context2d.clearRect(0,0,canvas.width, canvas.height);
 
-    let colors = ["#009e73", "#56b4e9", "#0072b2", "#00ced1", "#ffb000"]
-
-    //canvas.width = canvas.offsetWidth;
-    //canvas.height = canvas.offsetHeight;
+    let colors = ["#009e73", "#56b4e9", "#cc6677", "#00ced1", "#ffb000"]
 
     let lines = data.split("\n");
     let wh = lines[0].split("x");
@@ -28,7 +25,7 @@ function handleMessage(data) {
                 context2d.strokeStyle = "darkgray"
                 context2d.stroke()
             } else if (id == '-1') {
-                context2d.fillStyle = "#dc267f"
+                context2d.fillStyle = "#882255"
                 context2d.fill();
             } else {
                 context2d.fillStyle = colors[id%colors.length]
@@ -37,5 +34,7 @@ function handleMessage(data) {
             context2d.closePath();
         }
     }
-    document.body.style.backgroundColor = colors[id%colors.length]
+    if(join) {
+        document.body.style.backgroundColor = colors[id%colors.length]
+    }
 }

@@ -1,6 +1,13 @@
 body {
     max-width: 100%;
 }
+body.controls {
+    text-align: center;
+}
+
+h1 {
+    margin-bottom: 1rem;
+}
 
 canvas {
     max-width: 95%;
