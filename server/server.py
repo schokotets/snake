@@ -3,6 +3,7 @@ import http.server
 import websocket_server
 import socketserver
 import socket
+import sys
 import struct
 from gamestate import GameState
 
@@ -25,8 +26,13 @@ class WebSocketThread(threading.Thread):
         self.websocks.send_message_to_all(msg)
     def client_connected(self, client, server):
         print("websocket: client connected, given id %d" % client['id'])
+        server.send_message(client, "%d" % client['id'])
+    def message_received(self, client, server, msg):
+        print("websocket: received message \"%s\"" % msg)
+        
     def run(self):
         self.websocks.set_fn_new_client(self.client_connected)
+        self.websocks.set_fn_message_received(self.message_received)
         print("websocket: serving websocket at port", WEBSOCKET_PORT)
         self.websocks.serve_forever()
 
@@ -49,12 +55,23 @@ class UdpThread(threading.Thread):
 
 try:
     print("system: staring threads...")
+
     websockt = WebSocketThread()
+    websockt.daemon = True
     websockt.start()
+
     gamestate = GameState(websockt.send)
 
-    HttpThread().start()
-    UdpThread().start()
+    httpt = HttpThread()
+    httpt.daemon = True
+    httpt.start()
+
+    udpt = UdpThread()
+    udpt.daemon = True
+    udpt.start()
+
+    while httpt.is_alive():
+        httpt.join(1)
 except (KeyboardInterrupt, SystemExit):
     print("system: received keyboard interrupt, quitting threads")
     sys.exit()
