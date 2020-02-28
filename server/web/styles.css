@@ -1,0 +1,26 @@
+body {
+    width: 100%;
+    touch-action: none;
+}
+
+canvas {
+    max-width: 90%;
+    margin: 0 auto;
+}
+
+table {
+    margin: 0;
+}
+
+button {
+    height: 3rem;
+    width: 3rem;
+    font-size: 2em;
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
+}

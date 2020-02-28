@@ -4,6 +4,7 @@ import websocket_server
 import socketserver
 import socket
 import sys
+import os
 import struct
 from gamestate import GameState
 
@@ -13,6 +14,8 @@ UDP_PORT=9900
 
 class HttpThread(threading.Thread):
     def run(self):
+        web_dir = os.path.join(os.path.dirname(__file__), 'web')
+        os.chdir(web_dir)
         Handler=http.server.SimpleHTTPRequestHandler
 
         with socketserver.TCPServer(("", HTTP_PORT), Handler) as httpd:
@@ -20,21 +23,23 @@ class HttpThread(threading.Thread):
                 httpd.serve_forever()
 
 class WebSocketThread(threading.Thread):
-    websocks = websocket_server.WebsocketServer(WEBSOCKET_PORT)
+    websocks = websocket_server.WebsocketServer(WEBSOCKET_PORT, '0.0.0.0')
     def send(self, msg):
         #print("websocket: sending message \"%s\"" % msg)
         self.websocks.send_message_to_all(msg)
     def client_connected(self, client, server):
         print("websocket: client connected, given id %d" % client['id'])
         server.send_message(client, "%d" % client['id'])
-        gamestate.join(client['id'])
     def client_left(self, client, server):
         print("websocket: client %d left" % client['id'])
         gamestate.kill(client['id'])
     def message_received(self, client, server, msg):
         print("websocket: received message \"%s\"" % msg)
-        id,dir = msg.split()
-        gamestate.handle(int(id), dir)
+        if msg == "join":
+            gamestate.join(client['id'])
+        else:
+            id,dir = msg.split()
+            gamestate.handle(int(id), dir)
     def run(self):
         self.websocks.set_fn_new_client(self.client_connected)
         self.websocks.set_fn_client_left(self.client_left)

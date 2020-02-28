@@ -1,10 +1,15 @@
-var connection = new WebSocket('ws://localhost:8090/')
+let url = window.location.href
+url = url.replace("http", "ws").split("8080")[0]+"8090/"
+
+var connection = new WebSocket(url)
 
 id = -1
 
 // When the connection is open, send some data to the server
 connection.onopen = function () {
-  //connection.send('Ping'); // Send the message 'Ping' to the server
+  if(join) {
+    connection.send("join");
+  }
 };
 
 // Log errors
@@ -14,7 +19,7 @@ connection.onerror = function (error) {
 
 // Log messages from the server
 connection.onmessage = function (e) {
-  console.log('Server: ' + e.data);
+  console.debug('Server: ' + e.data);
   if(id == -1) {
     id = parseInt(e.data, 10)
     console.log('Setting ID to ' + e.data)
