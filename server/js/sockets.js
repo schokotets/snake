@@ -19,7 +19,9 @@ connection.onmessage = function (e) {
     id = parseInt(e.data, 10)
     console.log('Setting ID to ' + e.data)
   } else {
-    handleMessage(e.data);
+    if(handleMessage) {
+      handleMessage(e.data);
+    }
   }
 };
 

@@ -3,11 +3,16 @@
 	<head>
 		<title>Network Snake</title>
 		<script src="js/controls.js" type="text/javascript"></script>
+		<script src="js/draw.js" type="text/javascript"></script>
         <script src="js/sockets.js" type="text/javascript"></script>
 	</head>
 	<body>
 		<h1>Network Snake</h1>
         <p>Hello World!</p>
+        <!--remove later-->
+		<canvas width=400 height=240 id="canvas">
+        </canvas>
+        <br>
         <button id="up" onclick="up()">Up</button>
         <button id="right" onclick="right()">Right</button>
         <button id="down" onclick="down()">Down</button>

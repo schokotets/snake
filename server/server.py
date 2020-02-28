@@ -22,17 +22,22 @@ class HttpThread(threading.Thread):
 class WebSocketThread(threading.Thread):
     websocks = websocket_server.WebsocketServer(WEBSOCKET_PORT)
     def send(self, msg):
-        print("websocket: sending message \"%s\"" % msg)
+        #print("websocket: sending message \"%s\"" % msg)
         self.websocks.send_message_to_all(msg)
     def client_connected(self, client, server):
         print("websocket: client connected, given id %d" % client['id'])
         server.send_message(client, "%d" % client['id'])
+        gamestate.join(client['id'])
+    def client_left(self, client, server):
+        print("websocket: client %d left" % client['id'])
+        gamestate.kill(client['id'])
     def message_received(self, client, server, msg):
         print("websocket: received message \"%s\"" % msg)
         id,dir = msg.split()
         gamestate.handle(int(id), dir)
     def run(self):
         self.websocks.set_fn_new_client(self.client_connected)
+        self.websocks.set_fn_client_left(self.client_left)
         self.websocks.set_fn_message_received(self.message_received)
         print("websocket: serving websocket at port", WEBSOCKET_PORT)
         self.websocks.serve_forever()
@@ -69,9 +74,9 @@ try:
     httpt.daemon = True
     httpt.start()
 
-    udpt = UdpThread()
-    udpt.daemon = True
-    udpt.start()
+    #udpt = UdpThread()
+    #udpt.daemon = True
+    #udpt.start()
 
     while httpt.is_alive():
         httpt.join(1)
