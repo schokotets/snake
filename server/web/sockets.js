@@ -1,5 +1,5 @@
 let url_amend = ":8090/"
-let url = window.location.href.replace(/[a-z]*:\/\/([^:\/]*).*/mg, "ws://$1"+url_amend)
+let url = window.location.href.replace(/[a-z]*?(s)?:\/\/([^:\/]*).*/mg, "ws$1://$2"+url_amend)
 
 var connection = new WebSocket(url)
 
