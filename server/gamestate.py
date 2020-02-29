@@ -22,7 +22,8 @@ class GameState(threading.Thread):
         candidates = []
         for y in range(1,HEIGHT-1):
             for x in range(1,WIDTH-1):
-                if grid[pos] == 0:
+                pos = WIDTH*y + x
+                if self.grid[pos] == 0:
                     candidates.append(pos)
         return random.choice(candidates)
 
@@ -116,6 +117,9 @@ class GameState(threading.Thread):
             self.grid[self.food] = -1
 
     def handle(self, id, dir):
+        if not id in self.players:
+            self.join(id)
+            return
         self.timeout[id] = 0
         #print("gamestate: handling %d %s" % (id, dir))
         if dir == "u" and self.facing[id] != "d":
