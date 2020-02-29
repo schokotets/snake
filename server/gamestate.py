@@ -70,7 +70,7 @@ class GameState(threading.Thread):
     def handle_timeouts(self):
         for id in self.players:
             self.timeout[id] = self.timeout[id] + 1
-            if self.timeout[id] > 300/FRAMETIME:
+            if self.timeout[id] > 20/FRAMETIME:
                 print("gamestate: snake %d timed out" % id)
                 self.kill(id)
                 #to fix dictionary size change
