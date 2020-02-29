@@ -19,10 +19,12 @@ class GameState(threading.Thread):
         self.websocket_send = websocket_send
 
     def freepos(self):
-        pos = random.randrange(WIDTH*HEIGHT)
-        while self.grid[pos] != 0:
-            pos = random.randrange(WIDTH*HEIGHT)
-        return pos
+        candidates = []
+        for y in range(1,HEIGHT-1):
+            for x in range(1,WIDTH-1):
+                if grid[pos] == 0:
+                    candidates.append(pos)
+        return random.choice(candidates)
 
     def join(self, id):
         pos = self.freepos()
@@ -108,9 +110,8 @@ class GameState(threading.Thread):
         
         #food generator
         if self.food == -1: #no food placed
-            if random.random() < 0.1:
-                self.food = self.freepos()
-                print("gamestate: food spawned at pos %d" % self.food)
+            self.food = self.freepos()
+            print("gamestate: food spawned at pos %d" % self.food)
         if self.food != -1: #food exists
             self.grid[self.food] = -1
 
