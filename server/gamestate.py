@@ -4,12 +4,14 @@ import time
 
 WIDTH = 20
 HEIGHT = 12
+FRAMETIME = 0.3
 
 class GameState(threading.Thread):
     grid = [0] * (WIDTH*HEIGHT)
     players = {} # positions of the players' blocks
     facing = {}
     lengths = {}
+    timeout = {}
     food = -1
 
     def __init__(self, websocket_send):
@@ -28,6 +30,7 @@ class GameState(threading.Thread):
         self.players[id] = [pos]
         self.facing[id] = random.choice(["u", "r", "d", "l"])
         self.lengths[id] = 3
+        self.timeout[id] = 0
 
     def reset(self, id):
         for pos in self.players[id]:
@@ -37,9 +40,10 @@ class GameState(threading.Thread):
         self.players[id] = [pos]
         self.facing[id] = random.choice(["u", "r", "d", "l"])
         self.lengths[id] = 3
+        self.timeout[id] = 0
 
-    
     def kill(self, id):
+        print("gamestate: killing snake %d" % id)
         if not id in self.players:
             return
         for pos in self.players[id]:
@@ -47,6 +51,7 @@ class GameState(threading.Thread):
         del self.players[id]
         del self.facing[id]
         del self.lengths[id]
+        del self.timeout[id]
 
     def bound(self, pos, dir):
         if pos % WIDTH == 0 and dir == "r": #left bound
@@ -58,6 +63,16 @@ class GameState(threading.Thread):
         if pos >= WIDTH*HEIGHT: #bottom bound
             return pos - WIDTH*HEIGHT
         return pos
+
+    def handle_timeouts(self):
+        for id in self.players:
+            self.timeout[id] = self.timeout[id] + 1
+            if self.timeout[id] > 300/FRAMETIME:
+                print("gamestate: snake %d timed out" % id)
+                self.kill(id)
+                #to fix dictionary size change
+                self.handle_timeouts()
+                return
 
     def update(self):
         for id in self.players:
@@ -100,18 +115,19 @@ class GameState(threading.Thread):
             self.grid[self.food] = -1
 
     def handle(self, id, dir):
-        print("gamestate: handling %d %s" % (id, dir))
+        self.timeout[id] = 0
+        #print("gamestate: handling %d %s" % (id, dir))
         if dir == "u" and self.facing[id] != "d":
-            print("gamestate: snake %d turns up" % id)
+            #print("gamestate: snake %d turns up" % id)
             self.facing[id] = dir
         if dir == "r" and self.facing[id] != "l":
-            print("gamestate: snake %d turns right" % id)
+            #print("gamestate: snake %d turns right" % id)
             self.facing[id] = dir
         if dir == "d" and self.facing[id] != "u":
-            print("gamestate: snake %d turns down" % id)
+            #print("gamestate: snake %d turns down" % id)
             self.facing[id] = dir
         if dir == "l" and self.facing[id] != "r":
-            print("gamestate: snake %d turns left" % id)
+            #print("gamestate: snake %d turns left" % id)
             self.facing[id] = dir
 
     def sendState(self):
@@ -126,6 +142,7 @@ class GameState(threading.Thread):
 
     def run(self):
         while True:
+            self.handle_timeouts()
             self.update()
             self.sendState()
-            time.sleep(0.3)
+            time.sleep(FRAMETIME)

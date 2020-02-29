@@ -31,10 +31,11 @@ class WebSocketThread(threading.Thread):
         print("websocket: client connected, given id %d" % client['id'])
         server.send_message(client, "%d" % client['id'])
     def client_left(self, client, server):
-        print("websocket: client %d left" % client['id'])
-        gamestate.kill(client['id'])
+        if 'id' in client:
+            print("websocket: client %d left" % client['id'])
+            gamestate.kill(client['id'])
     def message_received(self, client, server, msg):
-        print("websocket: received message \"%s\"" % msg)
+        print("websocket: received message \"%s\" from client %d" % (msg, client['id']))
         if msg == "join":
             gamestate.join(client['id'])
         else:
