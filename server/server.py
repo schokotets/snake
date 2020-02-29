@@ -83,8 +83,9 @@ try:
     #udpt.daemon = True
     #udpt.start()
 
-    while httpt.is_alive():
-        httpt.join(1)
+    while websockt.is_alive():
+        websockt.join(1)
+    sys.exit()
 except (KeyboardInterrupt, SystemExit):
     print("system: received keyboard interrupt, quitting threads")
     sys.exit()

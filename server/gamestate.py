@@ -40,6 +40,8 @@ class GameState(threading.Thread):
 
     
     def kill(self, id):
+        if not id in self.players:
+            return
         for pos in self.players[id]:
             self.grid[pos] = 0
         del self.players[id]
