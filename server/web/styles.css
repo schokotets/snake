@@ -1,7 +1,5 @@
 body {
     max-width: 100%;
-}
-body.controls {
     text-align: center;
 }
 
@@ -11,7 +9,7 @@ h1 {
 
 canvas {
     max-width: 95%;
-    margin: 0 auto;
+    margin: 1em auto;
     display: block;
     border: black solid 3px;
     box-sizing: content-box;
