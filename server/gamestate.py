@@ -27,11 +27,11 @@ class GameState(threading.Thread):
                     candidates.append(pos)
         return random.choice(candidates)
 
-    def join(self, id):
+    def join(self, id, dir=random.choice(["u", "r", "d", "l"])):
         pos = self.freepos()
         self.grid[pos] = id
         self.players[id] = [pos]
-        self.facing[id] = random.choice(["u", "r", "d", "l"])
+        self.facing[id] = dir
         self.lengths[id] = 3
         self.timeout[id] = 0
 
@@ -118,7 +118,10 @@ class GameState(threading.Thread):
 
     def handle(self, id, dir):
         if not id in self.players:
-            self.join(id)
+            if dir in ["u", "r", "d", "l"]:
+                self.join(id, dir)
+            else:
+                self.join(id)
             return
         self.timeout[id] = 0
         #print("gamestate: handling %d %s" % (id, dir))
